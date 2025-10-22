@@ -1,0 +1,20 @@
+{
+  "name": "milky-way-reminder",
+  "module": "src/index.ts",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "bun run src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "astronomy-engine": "^2.1.19",
+    "commander": "^14.0.1"
+  }
+}
