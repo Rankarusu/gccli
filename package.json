@@ -1,8 +1,11 @@
 {
-  "name": "milky-way-reminder",
-  "module": "src/index.ts",
+  "name": "gccli",
+  "version": "1.0.0",
+  "description": "CLI to determine whether the galactic center is visible on a given day at given coordinates. Takes into account sun, moon,and weather",
+  "author": "Rankarusu",
+  "license": "MIT",
   "type": "module",
-  "version": "0.0.1",
+  "module": "src/index.ts",
   "private": true,
   "scripts": {
     "start": "bun run src/index.ts"
