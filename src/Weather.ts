@@ -1,13 +1,10 @@
-import type { Observer } from "./astronomy";
+import type { Observer } from "astronomy-engine";
 import { DateRange } from "./DateRange";
 import { formatDateTime } from "./utils";
 
 const TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast";
 const OPEN_METEO_OPTIONS = ["cloud_cover", "precipitation_probability"] as const;
-
-const CLOUD_COVER_THRESHOLD = 30;
-const PRECIPITATION_THRESHOLD = 30;
 
 export class Weather {
   constructor(private readonly observer: Observer) {}
@@ -34,7 +31,7 @@ export class Weather {
     }
   }
 
-  public async getWeatherRanges(dateRange: DateRange) {
+  public async getWeatherRanges(dateRange: DateRange, cloudinessThreshold: number, precipitationThreshold: number) {
     const forecast = await this.fetchWeather(dateRange);
     // no weather info available -> display as N/A
     if (forecast === undefined) {
@@ -63,7 +60,7 @@ export class Weather {
       if (
         cloudCover === undefined ||
         precipitationProbability === undefined ||
-        (cloudCover < CLOUD_COVER_THRESHOLD && precipitationProbability < PRECIPITATION_THRESHOLD)
+        (cloudCover < cloudinessThreshold && precipitationProbability < precipitationThreshold)
       ) {
         currentRange.push({
           time: time,

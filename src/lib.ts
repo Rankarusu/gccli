@@ -3,15 +3,19 @@ import { Observer } from "astronomy-engine";
 import { DateRange } from "./DateRange";
 import { Output } from "./Output";
 import { Weather } from "./Weather";
+import type { Options } from ".";
 
-export async function findVisibility(
-  latitude: number,
-  longitude: number,
-  height: number,
-  referenceDate: Date
-) {
+export async function findVisibility({
+  latitude,
+  longitude,
+  height,
+  date,
+  cloudiness: cloudinessThreshold,
+  precipitation: precipitationThreshold,
+  moon: moonThreshold,
+}: Options) {
   const observer = new Observer(latitude, longitude, height);
-  const startOfDay = new Date(referenceDate.setHours(0, 0, 0, 0));
+  const startOfDay = new Date(date.setHours(0, 0, 0, 0));
   const startTomorrow = new Date(startOfDay);
   startTomorrow.setDate(startOfDay.getDate() + 1);
 
@@ -20,9 +24,8 @@ export async function findVisibility(
 
   const gc = astro.getGcVisibility(startOfDay);
 
-  // write everything to a result object that can be formatted to json or whatever
   if (!gc) {
-    throw new Error("not visible at all");
+    return new Output([], 0, startOfDay, "", 0);
   }
 
   const sunToday = astro.getSunVisibility(startOfDay);
@@ -32,8 +35,7 @@ export async function findVisibility(
   const moon = astro.getMoonVisibility(startOfDay);
   const moonData = astro.getMoonData(startOfDay);
 
-  // we can ignore moon in first and last quarter
-  if (moonData.percentage > 50) {
+  if (moonData.percentage > moonThreshold) {
     rangesToCheck.push(moon);
   }
 
@@ -48,7 +50,9 @@ export async function findVisibility(
   const weatherRelevantEnd = effectiveVisibleRange.at(-1)!.end;
 
   const weatherRanges = await weather.getWeatherRanges(
-    new DateRange(weatherRelevantStart, weatherRelevantEnd)
+    new DateRange(weatherRelevantStart, weatherRelevantEnd),
+    cloudinessThreshold,
+    precipitationThreshold
   );
 
   return new Output(

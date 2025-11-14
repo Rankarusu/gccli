@@ -5,6 +5,18 @@ import { Command, Option } from "commander";
 
 const program = new Command();
 
+export type Options = {
+  latitude: number;
+  longitude: number;
+  height: number;
+  date: Date;
+  cloudiness: number;
+  precipitation: number;
+  moon: number;
+  json: boolean;
+  ics: boolean;
+};
+
 program
   .name("mwr")
   .description("CLI find the next visibility window of the milky way")
@@ -20,21 +32,42 @@ program
       .argParser((v) => new Date(v))
       .default(new Date())
   )
-  .addOption(new Option("--json", "output data as json"));
+  .addOption(
+    new Option("-c, --cloudiness <int>", "maximum cloudiness to accept as visible")
+      .argParser(parseInt)
+      .default(30)
+  )
+  .addOption(
+    new Option(
+      "-p, --precipitation <int>",
+      "maximum precipitation probability to accept as visible"
+    )
+      .argParser(parseInt)
+      .default(30)
+  )
+  .addOption(
+    new Option("-m, --moon <int>", "maximum moon illumination (in percent) to accept")
+      .argParser(parseInt)
+      .default(50)
+  )
+  .addOption(new Option("--json", "output data as json"))
+  .addOption(new Option("--ics", "output data as ics, can be piped into a file"));
 
 program.parse(process.argv);
 
-const options = program.opts();
+const options = program.opts<Options>();
+
+if (options.ics && options.json) {
+  console.error("cannot format to json and ics at the same time");
+  process.exit(1);
+}
 
 try {
-  const result = await findVisibility(
-    options.latitude,
-    options.longitude,
-    options.height,
-    options.date
-  );
+  const result = await findVisibility(options);
   if (options.json) {
     console.log(result.toJson());
+  } else if (options.ics) {
+    console.log(result.toIcs());
   } else {
     console.log(result.toString());
   }
