@@ -1,0 +1,57 @@
+name: Build and Release
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+jobs:
+  build:
+    strategy:
+      matrix:
+        target:
+          - bun-linux-x64
+          - bun-linux-arm64
+          - bun-darwin-x64
+          - bun-darwin-arm64
+          - bun-windows-x64
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build binary
+        run: |
+          bun build src/index.ts --compile --target "${{ matrix.target }}" \
+            --outfile "gccli-${{ matrix.target }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "gccli-${{ matrix.target }}"
+          path: "gccli-${{ matrix.target }}*" #windows task puts an .exe at the end
+
+  release:
+      name: Create GitHub Release
+      needs: build
+      runs-on: ubuntu-latest
+      permissions:
+        contents: write
+
+      steps:
+        - name: Download binaries
+          uses: actions/download-artifact@v4
+          with:
+            path: ./dist
+
+        - name: Create GitHub Release
+          uses: softprops/action-gh-release@v2
+          with:
+            files: ./dist/**/*
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

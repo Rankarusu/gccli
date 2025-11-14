@@ -39,4 +39,12 @@ gccli -l 50.111234 -L 9.234 --cloudiness 100 --moon 100 --precipitation 100
 
 ## Installation
 
-TBD
+### run via bun
+
+1. clone the repo
+2. use the `gccli` shell script
+
+### as a binary
+
+1. go to the github releases page
+2. download the lated version for your system architecture
