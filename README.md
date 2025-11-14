@@ -1,6 +1,7 @@
-# gccli
+# gccli - Galactic Center CLI
 
-CLI to determine whether the galactic center is visible on a given day at given coordinates. Takes into account sun, moon,and weather
+CLI to determine whether the galactic center is visible on a given day at given coordinates. Takes into account sun, moon, and weather.
+
 Can output plain text, json and ICS formatted text.
 
 Built with [Bun](https://github.com/oven-sh/bun), [Commander](https://github.com/tj/commander.js) and [Astronomy Engine](https://github.com/cosinekitty/astronomy)

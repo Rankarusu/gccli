@@ -1,7 +1,7 @@
 {
   "name": "gccli",
   "version": "1.0.0",
-  "description": "CLI to determine whether the galactic center is visible on a given day at given coordinates. Takes into account sun, moon,and weather",
+  "description": "CLI to determine whether the galactic center is visible on a given day at given coordinates. Takes into account sun, moon, and weather",
   "author": "Rankarusu",
   "license": "MIT",
   "type": "module",
