@@ -42,7 +42,7 @@ END:VCALENDAR`;
     const now = new Date();
     return `BEGIN:VEVENT
 DTSTAMP:${formatIcsDateTime(now)}
-UID:${randomUUIDv7(undefined, now)}@gccli.de
+UID:${randomUUIDv7(undefined, now)}@gccli
 DTSTART:${formatIcsDateTime(dateRange.dateRange.start)}
 DTEND:${formatIcsDateTime(dateRange.dateRange.end)}
 DESCRIPTION:${this.getIcsDescription(dateRange)}
