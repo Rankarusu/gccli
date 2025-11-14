@@ -1,5 +1,8 @@
-import { formatDate, formatDateTime, formatTime } from "./utils";
+import { randomUUIDv7 } from "bun";
+import { formatDate, formatDateTime, formatIcsDateTime, formatTime } from "./utils";
 import type { WeatherRange } from "./Weather";
+
+const ICS_TITLE = "Galactic Center is visible!";
 
 export class Output {
   constructor(
@@ -27,7 +30,39 @@ ${this.weatherRanges.map(
   }
 
   public toIcs() {
-    // implement this
+    if (this.weatherRanges.length === 0) {
+      throw new Error("Not visible, cannot generate ICS-file");
+    }
+
+    return `BEGIN:VCALENDAR
+VERSION:2.0
+${this.weatherRanges.map((r) => this.getDateRangeIcsRepresentation(r)).join("\n")}
+END:VCALENDAR`;
+  }
+
+  private getDateRangeIcsRepresentation(dateRange: WeatherRange) {
+    const now = new Date();
+    return `BEGIN:VEVENT
+DTSTAMP:${formatIcsDateTime(now)}
+UID:${randomUUIDv7(undefined, now)}@gccli.de
+DTSTART:${formatIcsDateTime(dateRange.dateRange.start)}
+DTEND:${formatIcsDateTime(dateRange.dateRange.end)}
+DESCRIPTION:${this.getIcsDescription(dateRange)}
+SUMMARY:${ICS_TITLE}
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:${ICS_TITLE}
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT`;
+  }
+
+  private getIcsDescription(dateRange: WeatherRange) {
+    return `Elevation: ${this.elevation.toFixed(1)}º\\nMoon: ${
+      this.moonPhase
+    } (${this.moonPercentage.toFixed(1)}%)\\nCloud Cover: ${
+      dateRange.cloudCover ?? "N/A"
+    }%\\nPrecipitation Probability: ${dateRange.precipitationProbability ?? "N/A"}%`;
   }
 
   public toJson(): string {
