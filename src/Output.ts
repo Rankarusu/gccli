@@ -19,12 +19,14 @@ Elevation: ${this.elevation.toFixed(1)}º
 Moon: ${this.moonPhase} (${this.moonPercentage.toFixed(1)}%)
 
 From\tTo\tCloudiness\tPrecipitation
-${this.weatherRanges.map(
-  (r) =>
-    `${formatTime(r.dateRange.start)}\t${formatTime(r.dateRange.end)}\t${
-      r.cloudCover ?? "N/A"
-    }%\t\t${r.precipitationProbability ?? "N/A"}%`
-)}`;
+${this.weatherRanges
+  .map(
+    (r) =>
+      `${formatTime(r.dateRange.start)}\t${formatTime(r.dateRange.end)}\t${
+        r.cloudCover ?? "N/A"
+      }%\t\t${r.precipitationProbability ?? "N/A"}%`
+  )
+  .join("\n")}`;
   }
 
   public toIcs() {

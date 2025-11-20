@@ -19,17 +19,21 @@ export type Options = {
 
 program
   .name("gccli")
-  .description("CLI to determine whether the galactic center is visible on a given day at given coordinates. Takes into account sun, moon, and weather")
+  .description(
+    "CLI to determine whether the galactic center is visible on a given day at given coordinates. Takes into account sun, moon, and weather"
+  )
   .version(version)
   .usage("--latitude <float> --longitude <float>")
-  .addHelpText('after',`
+  .addHelpText(
+    "after",
+    `
 Examples:
 
   $ ${program.name()} --latitude 50.11 --longitude 8.68 # basic usage
   $ ${program.name()} -l 50.111234 -L 9.234 -h 200 -d 2024-11-14 --json # get data for specific date and output as json
   $ ${program.name()} -l 50.111234 -L 9.234 --ics > file.ics # pipe into an ics file
   $ ${program.name()} -l 50.111234 -L 9.234 --cloudiness 100 --moon 100 --precipitation 100 # ignore moon and weather when calculating visibility`
-)
+  )
   .addOption(
     new Option(
       "-l, --latitude <float>",
@@ -65,7 +69,13 @@ Examples:
   )
   .addOption(
     new Option("-d, --date <date>", "date to check")
-      .argParser((v) => new Date(v))
+      .argParser((v) => {
+        const parsedDate = Date.parse(v);
+        if (isNaN(parsedDate)) {
+          throw new InvalidArgumentError("Invalid date.");
+        }
+        return new Date(parsedDate);
+      })
       .default(new Date(), "today")
   )
   .addOption(
