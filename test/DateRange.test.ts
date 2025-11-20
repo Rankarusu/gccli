@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { DateRange } from "./DateRange";
+import { DateRange } from "../src/DateRange";
 
 describe(() => {
   const cases = [

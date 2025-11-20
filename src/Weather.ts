@@ -31,15 +31,21 @@ export class Weather {
     }
   }
 
-  public async getWeatherRanges(dateRange: DateRange, cloudinessThreshold: number, precipitationThreshold: number) {
+  public async getWeatherRanges(
+    dateRange: DateRange,
+    cloudinessThreshold: number,
+    precipitationThreshold: number
+  ) {
     const forecast = await this.fetchWeather(dateRange);
     // no weather info available -> display as N/A
     if (forecast === undefined) {
-      return [{
-        dateRange,
-        cloudCover: undefined,
-        precipitationProbability: undefined,
-      } as WeatherRange]
+      return [
+        {
+          dateRange,
+          cloudCover: undefined,
+          precipitationProbability: undefined,
+        } as WeatherRange,
+      ];
     }
 
     const result: WeatherRange[] = [];
@@ -97,10 +103,15 @@ export class Weather {
         }
       );
 
+      const amountCloudCover = currentRange.filter((i) => i.cloudCover !== undefined).length;
+      const amountPrecipitation = currentRange.filter(
+        (i) => i.precipitationProbability !== undefined
+      ).length;
+
       return {
         dateRange: new DateRange(currentRange[0]!.time, endTime),
-        cloudCover: sums.cloudCover / currentRange.length,
-        precipitationProbability: sums.precipitationProbability / currentRange.length,
+        cloudCover: sums.cloudCover / amountCloudCover,
+        precipitationProbability: sums.precipitationProbability / amountPrecipitation,
       } as WeatherRange;
     }
   }
@@ -117,6 +128,7 @@ type WeatherNode = {
   cloudCover: number | undefined;
   precipitationProbability: number | undefined;
 };
+
 export type WeatherRange = {
   dateRange: DateRange;
   cloudCover: number | undefined;
